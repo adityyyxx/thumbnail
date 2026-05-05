@@ -78,8 +78,8 @@ export const logoutUser = async (req: Request, res: Response) => {
             console.log(error);
             return res.status(500).json({ message: error.message });
         }
+        return res.json({ message: 'Logout successful' });
     });
-    return res.json({ message: 'Logout successful' });
 };
 
 // Controllers For User Verify

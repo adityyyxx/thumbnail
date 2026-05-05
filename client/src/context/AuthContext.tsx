@@ -35,8 +35,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setIsLoggedIn(true);
             }
             toast.success(data.message);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            const message = error?.response?.data?.message || 'Sign up failed. Please try again.';
+            toast.error(message);
         }
     };
 
@@ -48,8 +50,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setIsLoggedIn(true);
             }
             toast.success(data.message);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            const message = error?.response?.data?.message || 'Login failed. Please try again.';
+            toast.error(message);
         }
     };
 
@@ -59,8 +63,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(null);
             setIsLoggedIn(false);
             toast.success(data.message);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
+            const message = error?.response?.data?.message || 'Logout failed. Please try again.';
+            toast.error(message);
         }
     };
 

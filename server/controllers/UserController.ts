@@ -4,7 +4,7 @@ import Thumbnail from '../models/Thumbnail.js';
 // Controllers to get All User Thumbnails
 export const getUsersThumbnails = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.session;
+        const { userId } = req.body;
 
         const thumbnails = await Thumbnail.find({ userId }).sort({ createdAt: -1 });
         res.json({ thumbnails });
@@ -17,7 +17,7 @@ export const getUsersThumbnails = async (req: Request, res: Response) => {
 // Controllers to get single Thumbnail of a User
 export const getThumbnailbyId = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.session;
+        const { userId } = req.body;
         const { id } = req.params;
 
         const thumbnail = await Thumbnail.findOne({ userId, _id: id });

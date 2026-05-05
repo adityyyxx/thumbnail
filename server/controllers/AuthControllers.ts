@@ -1,11 +1,23 @@
 import { Request, Response } from 'express';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+const generateToken = (id: string) => {
+    return jwt.sign({ id }, process.env.SESSION_SECRET as string, {
+        expiresIn: '7d',
+    });
+};
 
 // Controllers For User Registration
 export const registerUser = async (req: Request, res: Response) => {
     try {
+        console.log('[REGISTER] Request body:', JSON.stringify(req.body));
         const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Name, email, and password are required' });
+        }
 
         // find user by email
         const user = await User.findOne({ email });
@@ -20,12 +32,11 @@ export const registerUser = async (req: Request, res: Response) => {
         const newUser = new User({ name, email, password: hashedPassword });
         await newUser.save();
 
-        // setting user data in session
-        req.session.isLoggedIn = true;
-        req.session.userId = newUser._id;
+        const token = generateToken(newUser._id as string);
 
         return res.json({
             message: 'Account created successfully',
+            token,
             user: {
                 _id: newUser._id,
                 name: newUser.name,
@@ -33,8 +44,9 @@ export const registerUser = async (req: Request, res: Response) => {
             },
         });
     } catch (error: any) {
-        console.log(error);
-        res.status(500).json({ message: error.message });
+        console.error('[REGISTER] Error:', error);
+        console.error('[REGISTER] Stack:', error?.stack);
+        res.status(500).json({ message: error.message || 'Internal server error' });
     }
 };
 
@@ -48,17 +60,16 @@ export const loginUser = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(password, user.password as string);
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
-        // setting user data in session
-        req.session.isLoggedIn = true;
-        req.session.userId = user._id;
+        const token = generateToken(user._id as string);
 
         return res.json({
             message: 'Login successful',
+            token,
             user: {
                 _id: user._id,
                 name: user.name,
@@ -73,19 +84,14 @@ export const loginUser = async (req: Request, res: Response) => {
 
 // Controllers For User Logout
 export const logoutUser = async (req: Request, res: Response) => {
-    req.session.destroy((error: any) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ message: error.message });
-        }
-        return res.json({ message: 'Logout successful' });
-    });
+    // Client will remove token
+    return res.json({ message: 'Logout successful' });
 };
 
 // Controllers For User Verify
 export const verifyUser = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.session;
+        const { userId } = req.body; // Set by protect middleware
 
         const user = await User.findById(userId).select('-password');
 

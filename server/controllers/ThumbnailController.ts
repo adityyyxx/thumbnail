@@ -91,7 +91,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
         }
 
         const data = await nvidiaResponse.json();
-        
+
         let base64Image = '';
         if (data.artifacts && data.artifacts[0] && data.artifacts[0].base64) {
             base64Image = `data:image/png;base64,${data.artifacts[0].base64}`;

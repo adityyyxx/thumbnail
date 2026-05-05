@@ -20,7 +20,7 @@ await connectDB()
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://thumbnail-client.vercel.app'],
     credentials: true
 }))
 
@@ -36,7 +36,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/'
-    }, 
+    },
     store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URI as string,
         collectionName: 'sessions'

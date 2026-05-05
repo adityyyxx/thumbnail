@@ -23,8 +23,7 @@ connectDB();
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://thumbnail-client.vercel.app',
-    'https://thumblify.vercel.app',
+    'https://thumbnail-client.vercel.app'
 ];
 
 app.use(cors({

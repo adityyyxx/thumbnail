@@ -15,12 +15,27 @@ declare module 'express-session' {
     }
 }
 
-await connectDB()
-
 const app = express();
 
+// Connect to DB (wrapped to support Vercel serverless)
+connectDB();
+
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://thumbnail-client.vercel.app',
+    'https://thumblify.vercel.app',
+];
+
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://thumbnail-client.vercel.app'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS blocked: ${origin}`));
+        }
+    },
     credentials: true
 }))
 

@@ -10,6 +10,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 
             const decoded = jwt.verify(token, process.env.SESSION_SECRET as string) as { id: string };
 
+            req.body = req.body || {};
             req.body.userId = decoded.id; // Pass userId via body to avoid TS type issues
 
             next();

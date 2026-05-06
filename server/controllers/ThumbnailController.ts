@@ -66,8 +66,8 @@ export const generateThumbnail = async (req: Request, res: Response) => {
             height = 1344;
         }
 
-        // Generate image using NVIDIA NIM API (stable-diffusion-3.5-large) via correct endpoint
-        const nvidiaResponse = await fetch('https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-3-5-large', {
+        // Generate image using NVIDIA NIM API (stable-diffusion-3.5-large) via integrate endpoint
+        const nvidiaResponse = await fetch('https://integrate.api.nvidia.com/v1/images/generations', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.NVIDIA_API_KEY}`,
@@ -75,7 +75,9 @@ export const generateThumbnail = async (req: Request, res: Response) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                model: "stabilityai/stable-diffusion-3.5-large",
                 prompt,
+                response_format: "b64_json",
                 aspect_ratio: aspect_ratio === '1:1' ? '1:1' : aspect_ratio === '9:16' ? '9:16' : '16:9',
                 cfg_scale: 4.5,
                 steps: 28,
